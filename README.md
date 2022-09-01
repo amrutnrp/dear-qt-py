@@ -12,3 +12,4 @@
  
 
 	
+This script is kinda incomplete (i.e running for few widgets only). Help expand it's feature set by contributing to this project!
