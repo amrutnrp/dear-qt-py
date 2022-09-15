@@ -24,7 +24,8 @@ obj_types = [
     'radio',
     'lineEdit',
     'layoutwdiget',
-    'splitter'
+    'splitter',
+    'checkbox'
 
     ]
 

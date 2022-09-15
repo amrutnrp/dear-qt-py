@@ -14,7 +14,7 @@ from base import *
 
 if len(sys.argv) == 1:
     h= input ('No argument found, using the example file.. press enter')
-    f= open('example_Qt-files/UI_6.py','r')
+    f= open('example_Qt-files/new_1.py','r')
 else:
     input_py = sys.argv[1]
     f= open(input_py,'r')
@@ -73,6 +73,8 @@ for line in f:
             obj_dict [ a[1] ] = [obj_types[3]]
         elif is_assignmnt[1][1] == 'QLineEdit':
             obj_dict [ a[1] ] = [obj_types[4]]
+        elif is_assignmnt[1][1] == 'QCheckBox':
+            obj_dict [ a[1] ] = [obj_types[7]]
         elif is_assignmnt[1][1] == 'QWidget':
             layout_dict [ a[1] ] = [obj_types[5]]
             layout_widget_dict [a[1] ]=[]
@@ -102,7 +104,8 @@ for line in f:
 
 
     elif  '_translate' in line:
-        obj_dict [a[1]] .append(arg.split(',')[-1])
+        temp = re.findall(r'"([^"]*)"', arg)
+        obj_dict [a[1]] .append('"'+temp[-1]+'"')
     elif 'setGeometry' in line:
         if (a[1] in obj_dict):
             obj_dict [a[1]] .append(arg)
@@ -126,13 +129,13 @@ for line in f:
 #                           now dump the data
 
 
-
+coordinate_type = ['0','1','2','3','4','5','6','7','8','9',',', ' ']
 var_str = {}
 
 varS =  ''
 var_i = ''
 label_flag = False
-
+checkbox_flag = False
 
 for i in obj_dict:# i being the keys
     var_i = ''
@@ -140,6 +143,7 @@ for i in obj_dict:# i being the keys
     after_line_add = ''
     object_type_i = -1
     label_flag = False
+    checkbox_flag = False
     if obj_dict [i][0] == obj_types [0]: # btn
         var_i  =  '{} = dpg.add_button(tag= \'{}\'' .format(i,i)
         object_type_i = 0
@@ -157,6 +161,10 @@ for i in obj_dict:# i being the keys
     elif obj_dict [i][0] == obj_types [4]: # lineEdit
         var_i  =  '{} = dpg.add_input_text(tag= \'{}\'' .format(i,i)
         object_type_i = 4
+    elif obj_dict [i][0] == obj_types [7]: # check box
+        var_i  =  '{} = dpg.add_checkbox(tag= \'{}\'' .format(i,i)
+        object_type_i = 7
+        checkbox_flag = True
     # elif obj_dict [i][0] == obj_types [5]: #  layoutwdiget
     #     # var_i  =  '{} = dpg.add_text(tag= \'{}\'' .format(i,i)
     #     object_type_i = 5
@@ -169,11 +177,11 @@ for i in obj_dict:# i being the keys
         if type(j) == list:
             continue
         if type(j) == str:
-            if not (any(k.isalpha() for k in j) ):  # all are numbers -> coordinates
+            if all(k in coordinate_type for k in j) :  # all are numbers -> coordinates
                 x,y,w,h = j.split(',')
                 x,y,w,h = int (x), int (y), int (w), int (h)
                 x,y,w,h = int (x*resize_factor), int(y*resize_factor), int(w*resize_factor), int (h * resize_factor)
-                if label_flag:
+                if label_flag or checkbox_flag:
                     geo_param= ',pos=({}, {}) '.format(x,y)
                 else:
                     geo_param = ',pos=({}, {}), width={}, height={} '.format(x,y,w,h)
