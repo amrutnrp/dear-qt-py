@@ -54,7 +54,7 @@ ignoreList = [
     'setEnabled',
     'QFont',
     'QCoreApplication',
-    'connect',
+    '.connect(',
     'setBuddy',
     'setContentsMargins',
     'font',
